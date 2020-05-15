@@ -18,4 +18,19 @@
         based on your identity and the grants your have provided.</p>
         <pre>{{jwt accesstoken}}</pre>
     </div>
+
+    {{#if delegatedAuthority}}
+        <div class="section">
+            <h1>Exercise delegated authority.</h1>
+            <p>You have been granted authority to act on behalf of others, select an identity below to continue.</p>
+            <form>
+                <select id="identity" name="identity">
+                    {{#each delegatedAuthority}}
+                        <option value="{{this.id}}">{{this.profile.firstName}} {{this.profile.lastName}} ({{this.profile.login}})</option>
+                    {{/each}}
+                </select>
+                <button type="submit">Exercise Authority</button>
+            </form>
+        </div>
+    {{/if}}
 </div>

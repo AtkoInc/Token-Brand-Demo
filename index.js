@@ -48,12 +48,18 @@ let oidc = new ExpressOIDC({
 app.use(oidc.router);
   
 const router = express.Router();
-router.get("/",ensureAuthenticated(), (req, res, next) => {
+const DelegationHandler = require('./delegationHandler')
+
+router.get("/",ensureAuthenticated(), async (req, res, next) => {
+  dh = new DelegationHandler()
+  var delegatedIds = await dh.getDelegateIds(req)
+  console.log(delegatedIds)
     res.render("index",{
         brand: process.env.BRAND,
         user: req.userContext.userinfo,
         idtoken: req.userContext.tokens.id_token,
-        accesstoken: req.userContext.tokens.access_token
+        accesstoken: req.userContext.tokens.access_token,
+        delegatedAuthority: delegatedIds
        });
 });
 app.use(router)
