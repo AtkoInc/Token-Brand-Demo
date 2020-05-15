@@ -3,11 +3,15 @@ const express = require('express');
 const exphbs  = require('express-handlebars');
 const session = require("express-session");
 var createError = require('createerror');
+const bodyParser = require('body-parser')
+const querystring = require('querystring');
 const ExpressOIDC = require("@okta/oidc-middleware").ExpressOIDC;
 
 const PORT = process.env.PORT || "3000";
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 var hbs = exphbs.create({
     // Specify helpers which are only registered on this instance.
@@ -61,6 +65,29 @@ router.get("/",ensureAuthenticated(), async (req, res, next) => {
         accesstoken: req.userContext.tokens.access_token,
         delegatedAuthority: delegatedIds
        });
+});
+
+router.post("/exerciseAuthority",ensureAuthenticated(), async (req, res, next) => {
+  console.log(req.body)
+  dh = new DelegationHandler()
+  var id = await dh.registerDelegation(req,req.body.identity)
+  const nonce = id;
+  const state = id;
+  const params = {
+    nonce,
+    state,
+    client_id: process.env.CLIENT_ID,
+    redirect_uri: process.env.REDIRECT_URI,
+    scope: 'openid profile',
+    response_type: 'code',
+  };
+  console.log(req)
+  req.session[ `oidc:`+process.env.ISSUER] = {
+    nonce,
+    state
+  };
+  const url = process.env.ISSUER+`/v1/authorize?${querystring.stringify(params)}`;
+  return res.redirect(url);
 });
 app.use(router)
 

@@ -23,6 +23,16 @@ class DelegationHandler {
           }
         return ids
     }
+
+    async registerDelegation(req,id){
+        var resp = await axios.post(
+            process.env.DELGATION_SERVICE_URL + 'agent',
+            {entityid: id},
+            {headers:{
+                Authorization: "Bearer "+req.userContext.tokens.access_token}
+            })
+        return resp.data.id
+    }
 }
 
 module.exports = DelegationHandler

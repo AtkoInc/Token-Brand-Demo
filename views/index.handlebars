@@ -23,7 +23,7 @@
         <div class="section">
             <h1>Exercise delegated authority.</h1>
             <p>You have been granted authority to act on behalf of others, select an identity below to continue.</p>
-            <form>
+            <form method="POST" action="/exerciseAuthority">
                 <select id="identity" name="identity">
                     {{#each delegatedAuthority}}
                         <option value="{{this.id}}">{{this.profile.firstName}} {{this.profile.lastName}} ({{this.profile.login}})</option>
